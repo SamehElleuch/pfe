@@ -1,31 +1,3 @@
-/*
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 3. Neither the name of the Institute nor the names of its contributors
- *    may be used to endorse or promote products derived from this software
- *    without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE INSTITUTE AND CONTRIBUTORS ``AS IS'' AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL THE INSTITUTE OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
- * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
- *
- * This file is part of the Contiki operating system.
- *
- */
 
 #include "contiki.h"
 #include "contiki-lib.h"
@@ -46,6 +18,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <stdio.h>
 #include "collect-common.h"
 #include "collect-view.h"
 
@@ -56,9 +29,10 @@
 
 #define UDP_CLIENT_PORT 8775
 #define UDP_SERVER_PORT 5688
-
+#define taille 20
 static struct uip_udp_conn *server_conn;
-
+int received_msg[taille];
+uint8_t sender_msg[taille];
 PROCESS(udp_server_process, "UDP server process");
 AUTOSTART_PROCESSES(&udp_server_process,&collect_common_process);
 /*---------------------------------------------------------------------------*/
@@ -99,7 +73,7 @@ tcpip_handler(void)
   rimeaddr_t sender;
   uint8_t seqno;
   uint8_t hops;
-
+  int i;
   if(uip_newdata()) {
     appdata = (uint8_t *)uip_appdata;
     sender.u8[0] = UIP_IP_BUF->srcipaddr.u8[15];
@@ -108,6 +82,19 @@ tcpip_handler(void)
     hops = uip_ds6_if.cur_hop_limit - UIP_IP_BUF->ttl + 1;
     collect_common_recv(&sender, seqno, hops,
                         appdata + 2, uip_datalen() - 2);
+   for(i=0;i<taille;i++) {
+       if(sender_msg[i]==0) {
+                              sender_msg[i]=sender.u8[0];
+                              received_msg[i]++;
+                              printf("I received %d message from %u \n",received_msg[i],sender_msg[i]);
+                              break;
+                            }
+       if(sender_msg[i]==sender.u8[0]) {
+                                  received_msg[i]++;
+                                  printf("I received %d messages from %u \n",received_msg[i],sender_msg[i]);
+                                  break;
+                                  }
+   }
   }
 }
 /*---------------------------------------------------------------------------*/

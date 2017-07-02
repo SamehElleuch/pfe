@@ -158,10 +158,14 @@ PROCESS_THREAD(collect_common_process, ev, data)
         etimer_reset(&period_timer);
         etimer_set(&wait_timer, random_rand() % (CLOCK_SECOND * RANDWAIT));
       } else if(data == &wait_timer) {
+        printf("I prepare to send \n");
         if(send_active) {
           /* Time to send the data */
+          printf("I send \n");
           collect_common_send();
+         
         }
+         printf("I finish \n");
       }
     }
   }
