@@ -579,17 +579,10 @@ tcpip_ipv6_output(void)
         }
 
       } else {
-        /* A route was found, so we look up the nexthop neighbor for
-           the route. */
+        
         nexthop = uip_ds6_route_nexthop(route);
-
-        /* If the nexthop is dead, for example because the neighbor
-           never responded to link-layer acks, we drop its route. */
         if(nexthop == NULL) {
 #if UIP_CONF_IPV6_RPL
-          /* If we are running RPL, and if we are the root of the
-             network, we'll trigger a global repair berfore we remove
-             the route. */
           rpl_dag_t *dag;
           rpl_instance_t *instance;
 
@@ -601,9 +594,6 @@ tcpip_ipv6_output(void)
           }
 #endif /* UIP_CONF_RPL */
           uip_ds6_route_rm(route);
-
-          /* We don't have a nexthop to send the packet to, so we drop
-             it. */
           return;
         }
       }

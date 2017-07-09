@@ -1,49 +1,9 @@
-/**
- * \addtogroup simple-udp
- * @{
- */
 
-
-/*
- * Copyright (c) 2011, Swedish Institute of Computer Science.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 3. Neither the name of the Institute nor the names of its contributors
- *    may be used to endorse or promote products derived from this software
- *    without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE INSTITUTE AND CONTRIBUTORS ``AS IS'' AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL THE INSTITUTE OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
- * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
- *
- * This file is part of the Contiki operating system.
- *
- * \file
- *         Header file for the simple-udp module.
- * \author
- *         Adam Dunkels <adam@sics.se>
- *
- */
 
 #include "contiki-net.h"
 #include "net/simple-udp.h"
 
+#include "net/uip-debug.h"
 #include <string.h>
 
 
@@ -63,23 +23,12 @@ init_simple_udp(void)
   }
 }
 /*---------------------------------------------------------------------------*/
-/**
- * \brief      Send a UDP packet
- * \param c    A pointer to a struct simple_udp_connection
- * \param data A pointer to the data to be sent
- * \param datalen The length of the data
- *
- *             This function sends a UDP packet. The packet will be
- *             sent to the IP address and with the UDP ports that were
- *             specified when the connection wa registered with
- *             simple_udp_register().
- *
- * \sa simple_udp_sendto()
- */
+
 int
 simple_udp_send(struct simple_udp_connection *c,
                 const void *data, uint16_t datalen)
-{
+{  
+  
   if(c->udp_conn != NULL) {
     uip_udp_packet_sendto(c->udp_conn, data, datalen,
                           &c->remote_addr, UIP_HTONS(c->remote_port));
@@ -87,25 +36,13 @@ simple_udp_send(struct simple_udp_connection *c,
   return 0;
 }
 /*---------------------------------------------------------------------------*/
-/**
- * \brief      Send a UDP packet to a specified IP address
- * \param c    A pointer to a struct simple_udp_connection
- * \param data A pointer to the data to be sent
- * \param datalen The length of the data
- * \param to   The IP address of the receiver
- *
- *             This function sends a UDP packet to a specified IP
- *             address. The packet will be sent with the UDP ports
- *             that were specified when the connection wa registered
- *             with simple_udp_register().
- *
- * \sa simple_udp_send()
- */
+
 int
 simple_udp_sendto(struct simple_udp_connection *c,
                   const void *data, uint16_t datalen,
                   const uip_ipaddr_t *to)
-{
+{  uip_debug_ipaddr_print(to);
+  
   if(c->udp_conn != NULL) {
     uip_udp_packet_sendto(c->udp_conn, data, datalen,
                           to, UIP_HTONS(c->remote_port));

@@ -1,5 +1,6 @@
 CONTIKI = ../../..
 APPS = powertrace collect-view
+APPS += servreg-hack
 CONTIKI_PROJECT = udp-sender udp-sink
 PROJECT_SOURCEFILES += collect-common.c
 

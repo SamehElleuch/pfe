@@ -44,6 +44,7 @@
 #include "net/uip-debug.h"
 
 #define UIP_IP_BUF   ((struct uip_ip_hdr *)&uip_buf[UIP_LLH_LEN])
+#define UIP_IP_BUF1   ((struct uip_ip_hdr *)&uip_buf[UIP_LLH_LEN])
 
 #define UDP_CLIENT_PORT	8765
 #define UDP_SERVER_PORT	5678
@@ -65,7 +66,7 @@ tcpip_handler(void)
     appdata[uip_datalen()] = 0;
     PRINTF("DATA recv '%s' from ", appdata);
     PRINTF("%d",
-           UIP_IP_BUF->srcipaddr.u8[sizeof(UIP_IP_BUF->srcipaddr.u8) - 1]);
+           UIP_IP_BUF1->srcipaddr.u8[sizeof(UIP_IP_BUF->srcipaddr.u8) - 1]);
     PRINTF("\n");
 #if SERVER_REPLY
     PRINTF("DATA sending reply\n");

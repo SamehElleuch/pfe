@@ -1,55 +1,15 @@
-/** \addtogroup servreghack
- * @{ */
 
-/*
- * Copyright (c) 2010, Swedish Institute of Computer Science.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 3. Neither the name of the Institute nor the names of its contributors
- *    may be used to endorse or promote products derived from this software
- *    without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE INSTITUTE AND CONTRIBUTORS ``AS IS'' AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL THE INSTITUTE OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
- * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
- *
- * This file is part of the Contiki operating system.
- *
- */
-
-/**
- * \file
- *         Implementation of the servreg-hack application
- * \author
- *         Adam Dunkels <adam@sics.se>
- */
 
 #include "contiki.h"
 #include "contiki-lib.h"
 #include "contiki-net.h"
 
 #include "net/uip.h"
+#include "net/uip-debug.h"
 
-#include "net/uip-ds6.h"
-
+#define DEBUG DEBUG_PRINT
 #include "servreg-hack.h"
-
+#include <string.h>
 #include <stdio.h>
 
 struct servreg_hack_registration {
@@ -189,16 +149,18 @@ uip_ipaddr_t *
 servreg_hack_lookup(servreg_hack_id_t id)
 {
   servreg_hack_item_t *t;
+  //uip_ipaddr_t *addr;
 
   servreg_hack_init();
 
   purge_registrations();
-
+  
   for(t = servreg_hack_list_head(); t != NULL; t = list_item_next(t)) {
     if(servreg_hack_item_id(t) == id) {
       return servreg_hack_item_address(t);
     }
   }
+  
   return NULL;
 }
 /*---------------------------------------------------------------------------*/
@@ -207,19 +169,6 @@ handle_incoming_reg(const uip_ipaddr_t *owner, servreg_hack_id_t id, uint8_t seq
 {
   servreg_hack_item_t *t;
   struct servreg_hack_registration *r;
-
-  /* Walk through list, see if we already have a service ID
-     registered. If so, we do different things depending on the seqno
-     of the update: if the seqno is older than what we have, we
-     discard the incoming registration. If the seqno is newer than
-     what we have, we reset the lifetime timer of the current
-     registration.
-
-     If we did not have the service registered already, we allocate a
-     new registration and put it on our list. If we cannot allocate a
-     service registration, we discard the incoming registration (for
-     now - we might later choose to discard the oldest registration
-     that we have). */
 
   for(t = servreg_hack_list_head();
       t != NULL;

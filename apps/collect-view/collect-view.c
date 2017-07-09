@@ -68,6 +68,7 @@ collect_view_construct_message(struct collect_view_data_msg *msg,
   msg->num_neighbors = num_neighbors;
   msg->beacon_interval = beacon_interval;
   msg->number_send=number_send;
+  printf("the send number is %d \n",number_send);
   for (i=0; i<taille_send ;i++) {
                                    if (dest_send[i]==0){
 							      
